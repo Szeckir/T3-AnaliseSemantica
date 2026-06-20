@@ -1,0 +1,29 @@
+$TRACE_OFF
+
+// Caso correto: atributos, parametros, atribuicao a campo,
+// chamada de metodo entre objetos e uso de tipo-classe.
+
+class Conta {
+    int saldo;
+
+    public int deposita(int valor){
+        saldo = saldo + valor;
+        return saldo;
+    }
+
+    public boolean positiva(){
+        return 0 < saldo;
+    }
+}
+
+class Banco {
+    public int operar(Conta c){
+        return c.deposita(100);
+    }
+}
+
+class App {
+    public static void main(String[] a){
+        System.out.println(new Banco().operar(new Conta()));
+    }
+}

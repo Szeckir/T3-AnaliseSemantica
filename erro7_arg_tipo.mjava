@@ -1,0 +1,15 @@
+$TRACE_OFF
+
+// ERRO DE POLIMORFISMO: tipo de argumento incompativel (boolean onde se espera int).
+
+class C {
+    public int f(int v){
+        return v;
+    }
+}
+
+class App {
+    public static void main(String[] a){
+        System.out.println(new C().f(true));
+    }
+}

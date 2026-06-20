@@ -1,0 +1,16 @@
+$TRACE_OFF
+
+// ERRO DE ESCOPO: uso de uma classe (tipo) que nunca foi declarada.
+// 'Pessoa' nao existe -> erro tanto no parametro quanto no 'new'.
+
+class C {
+    public int m(Pessoa p){
+        return 0;
+    }
+}
+
+class App {
+    public static void main(String[] a){
+        System.out.println(new Pessoa());
+    }
+}

@@ -1,0 +1,15 @@
+$TRACE_OFF
+
+// ERRO DE POLIMORFISMO: chamada de metodo que nao existe na classe do objeto.
+
+class C {
+    public int dobro(int v){
+        return v + v;
+    }
+}
+
+class App {
+    public static void main(String[] a){
+        System.out.println(new C().triplo(3));
+    }
+}

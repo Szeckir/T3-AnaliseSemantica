@@ -1,0 +1,16 @@
+$TRACE_OFF
+
+// ERRO DE ESCOPO: uso de variavel nao declarada (x nao existe em nenhum escopo).
+
+class C {
+    public int m(){
+        x = 5;
+        return 0;
+    }
+}
+
+class App {
+    public static void main(String[] a){
+        System.out.println(1);
+    }
+}

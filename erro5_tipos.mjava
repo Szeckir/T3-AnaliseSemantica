@@ -1,0 +1,21 @@
+$TRACE_OFF
+
+// ERRO DE TIPOS: condicao de if nao booleana e return incompativel.
+
+class C {
+    int x;
+
+    public int m(){
+        if (5)
+            x = 1;
+        else
+            x = 2;
+        return true;
+    }
+}
+
+class App {
+    public static void main(String[] a){
+        System.out.println(1);
+    }
+}
