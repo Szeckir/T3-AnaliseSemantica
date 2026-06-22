@@ -1,17 +1,12 @@
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
 
-/**
- * Descritor de um metodo: tipo de retorno, parametros (ordenados) e
- * variaveis locais. Define o escopo mais interno na resolucao de
- * identificadores (local -> parametro -> atributo da classe).
- */
 public class DescMetodo
 {
    private String   nome;
    private TS_entry tipoRetorno;
-   private int      linhaDecl;   // linha onde foi declarado (p/ erros de override)
-   private LinkedHashMap<String, TS_entry> parametros; // ordem preservada p/ checar chamadas
+   private int      linhaDecl;   
+   private LinkedHashMap<String, TS_entry> parametros; 
    private LinkedHashMap<String, TS_entry> locais;
 
    public DescMetodo(String nome, TS_entry tipoRetorno) {
@@ -32,14 +27,13 @@ public class DescMetodo
    public void addParametro(String n, TS_entry t) { parametros.put(n, t); }
    public void addLocal(String n, TS_entry t)     { locais.put(n, t);     }
 
-   // resolucao: local primeiro, depois parametro; null se nao encontrado
    public TS_entry resolve(String n) {
       if (locais.containsKey(n))     return locais.get(n);
       if (parametros.containsKey(n)) return parametros.get(n);
       return null;
    }
 
-   // tipos dos parametros na ordem de declaracao (p/ checar chamada)
+  
    public ArrayList<TS_entry> tiposParametros() {
       return new ArrayList<TS_entry>(parametros.values());
    }

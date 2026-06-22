@@ -1,14 +1,11 @@
 import java.util.LinkedHashMap;
 
-/**
- * Descritor de uma classe: seus atributos (campos) e metodos.
- * Define o escopo de classe na resolucao de identificadores.
- */
+ 
 public class DescClasse
 {
    private String   nome;
-   private TS_entry tipo;        // o tipo-classe correspondente (instancias desta classe)
-   private DescClasse superclasse;   // null se nao herda (suporte a polimorfismo)
+   private TS_entry tipo;        
+   private DescClasse superclasse;   
    private LinkedHashMap<String, TS_entry>   atributos;
    private LinkedHashMap<String, DescMetodo> metodos;
 
@@ -26,12 +23,12 @@ public class DescClasse
    public DescClasse getSuperclasse() { return superclasse; }
    public void       setSuperclasse(DescClasse s) { this.superclasse = s; }
 
-   // ---- atributos: versao "propria" (so esta classe) p/ checagem de duplicacao ----
+
    public boolean  temAtributo(String n) { return atributos.containsKey(n); }
    public void     addAtributo(String n, TS_entry t) { atributos.put(n, t); }
    public TS_entry getAtributo(String n) { return atributos.get(n); }
 
-   // ---- atributos: versao "visivel" (sobe na cadeia de heranca) ----
+  
    public boolean temAtributoVisivel(String n) {
       for (DescClasse c = this; c != null; c = c.superclasse)
          if (c.atributos.containsKey(n)) return true;
@@ -43,12 +40,12 @@ public class DescClasse
       return null;
    }
 
-   // ---- metodos: versao "propria" (so esta classe) p/ checagem de duplicacao ----
+
    public boolean    temMetodo(String n) { return metodos.containsKey(n); }
    public void       addMetodo(DescMetodo m) { metodos.put(m.getNome(), m); }
    public DescMetodo getMetodo(String n) { return metodos.get(n); }
 
-   // ---- metodos: versao "visivel" (sobe na cadeia de heranca) ----
+
    public DescMetodo getMetodoVisivel(String n) {
       for (DescClasse c = this; c != null; c = c.superclasse)
          if (c.metodos.containsKey(n)) return c.metodos.get(n);

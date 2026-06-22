@@ -1,7 +1,6 @@
 $TRACE_OFF
 
-// Caso correto: atributos, parametros, atribuicao a campo,
-// chamada de metodo entre objetos e uso de tipo-classe.
+// polimorfismo funcionando
 
 class Conta {
     int saldo;

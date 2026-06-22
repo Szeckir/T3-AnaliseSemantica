@@ -1,6 +1,6 @@
 $TRACE_OFF
 
-// Caso valido: heranca + sobrescrita + atribuicao polimorfica.
+// teste heranca + sobrescrita + atribuicao polimorfica.
 // B herda de A; B sobrescreve m(); uma variavel do tipo A recebe um new B().
 
 class A {

@@ -1,147 +1,324 @@
-# Tarefa 3 — Análise Semântica para MiniJava
+# Tarefa 3 – Análise Polimorfismo 
 
-Analisador semântico de uma passagem para a linguagem **MiniJava**, construído sobre a
-especificação de gramática fornecida pelo professor. O foco do trabalho é o **controle
-de escopo** e o **polimorfismo** (despacho de método por tipo de objeto).
+- Eduarda Fuchs
+- Matheus Azevedo
+- Thomaz Szeckir
 
-## Como compilar e testar
 
-### Dependências
-- **JFlex** — gerador do analisador léxico.
-- **BYACC/J** — versão do `yacc` que gera código Java (flag `-J`). **Atenção:** é o
-  BYACC/J (de <https://byaccj.sourceforge.net/>), *não* o `byacc` comum. O `byacc`
-  padrão não gera Java.
-- **JDK** (`javac`/`java`).
+## Descrição do Trabalho
 
-No macOS, o JFlex sai pelo Homebrew (`brew install jflex`). O BYACC/J não está no
-Homebrew: baixe o fonte, compile (`cc -O -Wno-implicit-function-declaration -o yacc *.c`)
-e coloque o binário no PATH com o nome `byaccj`.
+Este trabalho foi desenvolvido na disciplina de Compiladores com o objetivo de implementar a etapa de **Análise Semântica** para a linguagem MiniJava.
 
-### Build e execução
-```sh
-make build              # gera Yylex.java + Parser.java e compila
-java Parser p1.mjava    # roda a análise semântica sobre um arquivo .mjava
+Após a construção dos analisadores léxico e sintático nas etapas anteriores, esta atividade tem como finalidade verificar se os programas escritos na linguagem obedecem às regras semânticas definidas pela especificação. Para isso, foram implementadas estruturas de armazenamento de símbolos e mecanismos de validação capazes de identificar inconsistências que não podem ser detectadas apenas pela análise sintática.
+
+A implementação foi realizada em **Java**, utilizando **JFlex** para geração do analisador léxico e **BYACC/J** para geração do analisador sintático.
+
+
+
+## Objetivos
+
+Os principais objetivos deste trabalho são:
+
+- Implementar uma tabela de símbolos para armazenamento das informações semânticas do programa;
+- Controlar os diferentes escopos existentes na linguagem;
+- Verificar a declaração e utilização correta de identificadores;
+- Validar chamadas de métodos;
+- Verificar compatibilidade de tipos;
+- Implementar suporte à herança entre classes;
+- Implementar verificação de polimorfismo e sobrescrita de métodos;
+- Detectar e reportar erros semânticos de forma adequada.
+
+
+
+## Funcionalidades Implementadas
+
+O analisador semântico desenvolvido realiza as seguintes verificações:
+
+### Controle de Escopo
+
+- Controle de escopo global;
+- Controle de escopo de classes;
+- Controle de escopo de métodos;
+- Controle de escopo de variáveis locais.
+
+### Declarações
+
+- Verificação de classes duplicadas;
+- Verificação de métodos duplicados;
+- Verificação de variáveis duplicadas;
+- Verificação de parâmetros duplicados.
+
+### Uso de Identificadores
+
+- Verificação de variáveis não declaradas;
+- Verificação de métodos não declarados;
+- Verificação de tipos não declarados.
+
+### Sistema de Tipos
+
+- Compatibilidade de tipos em atribuições;
+- Compatibilidade de tipos em expressões;
+- Compatibilidade de tipos em retornos de métodos;
+- Compatibilidade entre parâmetros formais e argumentos.
+
+### Herança
+
+- Verificação da existência da superclasse;
+- Registro da hierarquia de herança;
+- Busca de atributos herdados;
+- Busca de métodos herdados.
+
+### Polimorfismo
+
+- Sobrescrita de métodos;
+- Verificação de assinaturas compatíveis;
+- Resolução de chamadas considerando herança;
+- Compatibilidade entre objetos de subclasses e superclasses.
+
+
+
+## Estrutura do Projeto
+
+```text
+T3-AnaliseSemantica-main/
+│
+── README.md
+── ARQUIVOS.md
+── MODIFICACOES.md
+── POLIMORFISMO.md
+
+── lexico.flex
+── miniJava.y
+── ParserVal.java
+
+── TabSimb.java
+── TS_entry.java
+── ClasseID.java
+── DescClasse.java
+── DescMetodo.java
+
+── correto2.mjava
+── heranca_ok.mjava
+── polimorfismo_ok.mjava
+
+── erro1_naodeclarada.mjava
+── erro2_duplicado.mjava
+── erro3_metodo_inexistente.mjava
+── erro4_argumentos.mjava
+── erro5_tipos.mjava
+── erro6_tipo_nao_declarado.mjava
+── erro7_arg_tipo.mjava
+── erro8_super_nao_decl.mjava
+── erro9_override_assinatura.mjava
+
+
+── p1.mjava
+
+── Makefile
+── testar.sh
+── limpar.sh
 ```
-Sem argumento, o `Parser` lê da entrada padrão.
+## Estruturas Implementadas
 
-A saída lista a tabela de símbolos (classes, atributos e métodos com suas assinaturas)
-e a conclusão: `nenhum erro` ou a contagem de erros semânticos.
+### Tabela de Símbolos
 
-## Estrutura da tabela de símbolos
+A tabela de símbolos é responsável por armazenar informações sobre:
 
-A tabela é **aninhada em três níveis**, espelhando os escopos da linguagem:
+- Classes;
+- Métodos;
+- Variáveis;
+- Parâmetros;
+- Relações de herança.
 
+Essa estrutura permite realizar consultas durante toda a análise semântica.
+
+### Descritores
+
+Foram utilizados descritores específicos para representar elementos da linguagem:
+
+#### DescClasse
+
+Armazena:
+
+- Nome da classe;
+- Superclasse;
+- Métodos;
+- Atributos.
+
+#### DescMetodo
+
+Armazena:
+
+- Nome do método;
+- Tipo de retorno;
+- Lista de parâmetros;
+- Variáveis locais.
+
+#### TS_entry
+
+Representa uma entrada da tabela de símbolos contendo as informações associadas a cada identificador.
+
+---
+
+## Como Compilar
+
+### Utilizando Makefile
+
+Execute:
+
+```bash
+make
 ```
-TabSimb (escopo global)
- └── classes: Map<nome, DescClasse>
-      DescClasse (escopo de classe)
-       ├── atributos: Map<nome, tipo>            (campos)
-       └── metodos:   Map<nome, DescMetodo>
-            DescMetodo (escopo de método)
-             ├── tipoRetorno
-             ├── parametros: Map<nome, tipo>     (ordenado)
-             └── locais:     Map<nome, tipo>     (variáveis locais)
+
+Caso o ambiente possua as dependências configuradas corretamente, os arquivos necessários serão gerados automaticamente.
+
+
+
+### Compilação Manual
+
+#### 1. Gerar o analisador léxico
+
+```bash
+jflex lexico.flex
 ```
 
-Arquivos:
-- **`TabSimb.java`** — tabela global; guarda o `Map` de classes e faz a listagem final.
-- **`DescClasse.java`** — descritor de classe: seus atributos e métodos.
-- **`DescMetodo.java`** — descritor de método: retorno, parâmetros (ordem preservada
-  para checar chamadas) e variáveis locais.
-- **`TS_entry.java`** — representa um **tipo**. Tipos base (`int`, `boolean`, `int[]`,
-  `erro`) são *singletons*; um **tipo-classe** guarda referência ao seu `DescClasse`
-  (usado no despacho de método).
-- **`ClasseID.java`** — enum da classe do identificador (`NomeStruct` p/ classe,
-  `CampoStruct` p/ atributo, `NomeFuncao` p/ método, `NomeParam`, `VarLocal`, `TipoBase`).
+#### 2. Gerar o analisador sintático
 
-### Resolução de identificadores (controle de escopo)
-Ao analisar o corpo de um método, um identificador é resolvido na ordem:
-
-```
-variável local  →  parâmetro  →  atributo da classe corrente  →  ERRO (não declarada)
+```bash
+byaccj miniJava.y
 ```
 
-`this` resolve para a classe corrente. O parser mante `classeCorrente` e
-`metodoCorrente` (atualizados por ações intermediárias na gramática) para saber qual
-escopo está ativo a cada momento.
+#### 3. Compilar os arquivos Java
 
-### Análise em uma passagem
-Como exigido, toda classe, atributo e método é declarado antes do uso. Para suportar
-**recursão**, ao entrar em um método sua assinatura é registrada na classe **antes** de
-analisar o corpo — assim `this.ComputeFac(num-1)` (em `p1.mjava`) resolve. Entre
-classes, a ordem "declarar antes de usar" garante que uma classe referenciada em `new C()`
-ou como tipo já está na tabela (a classe `App`, que contém o `main`, vem por último).
-
-## Validações executadas
-
-### Escopo (foco)
-- Classe usada como tipo ou em `new C()` deve estar **declarada antes**.
-- Classe declarada mais de uma vez.
-- Atributo duplicado na mesma classe.
-- Método duplicado na mesma classe.
-- Parâmetro duplicado no mesmo método.
-- Variável local duplicada; local que colide com parâmetro de mesmo nome.
-- Identificador usado sem declaração (não resolvível na cadeia de escopos).
-
-### Polimorfismo / despacho de método (foco)
-- `e.metodo(args)`: `e` deve ter tipo-classe; a classe deve **declarar** o método;
-  o **número** de argumentos deve casar com o de parâmetros; o **tipo** de cada
-  argumento deve ser compatível com o parâmetro correspondente.
-- `new C()`: `C` deve ser uma classe declarada.
-
-### Tipos (suporte)
-- Atribuição compatível (`int=int`, `boolean=boolean`, `tipo-classe = mesmo tipo-classe`).
-- `+ - * /` exigem `int`, resultam `int`.
-- `<` exige `int`, resulta `boolean`.
-- `&&` e `!` exigem `boolean`.
-- `== !=` entre operandos compatíveis, resultam `boolean`.
-- Condição de `if`/`while` deve ser `boolean`.
-- Tipo da expressão do `return` deve casar com o retorno declarado do método.
-
-Os erros usam propagação de um tipo especial `erro`: uma vez detectado um erro numa
-subexpressão, ele não gera novos erros em cascata acima.
-
-## Arquivos de teste
-
-| Arquivo | O que exercita |
-|---|---|
-| `p1.mjava` | Correto — fatorial recursivo (exemplo do professor). |
-| `correto2.mjava` | Correto — atributos, parâmetro de tipo-classe, chamada de método entre objetos. |
-| `erro1_naodeclarada.mjava` | Escopo — uso de variável não declarada. |
-| `erro2_duplicado.mjava` | Escopo — atributo declarado duas vezes. |
-| `erro3_metodo_inexistente.mjava` | Polimorfismo — método inexistente na classe do objeto. |
-| `erro4_argumentos.mjava` | Polimorfismo — número de argumentos incompatível. |
-| `erro7_arg_tipo.mjava` | Polimorfismo — tipo de argumento incompatível. |
-| `erro5_tipos.mjava` | Tipos — condição de `if` não booleana e `return` incompatível. |
-| `erro6_tipo_nao_declarado.mjava` | Escopo — uso de classe (tipo) nunca declarada. |
-
-## Decisões e simplificações
-
-- **Sem herança**: a gramática do professor não tem `extends`. "Polimorfismo" aqui é o
-  **despacho de método por tipo de objeto** (`obj.metodo(...)`), não subtipagem. Sem
-  herança, compatibilidade de tipo-classe é igualdade de classe.
-- **Arrays**: a sintaxe aceita `int[]`, `length` e `new int[...]`, mas — conforme o
-  enunciado ("não serão tratados arrays") — **não há checagem semântica de arrays**;
-  acessos de array recebem tipo `int` sem validação.
-- **Tipos**: a linguagem tem `int`, `boolean`, `int[]` e tipo-classe (não há `double`).
-- **`main`**: a classe `App` que contém o `main` (token especial `class App`, que evita
-  o conflito S/R) é tratada como uma classe sem atributos, com o `main` como um método.
-- **Linhas dos erros**: erros de declaração e de uso de identificador apontam a linha
-  exata do identificador; erros de `if`/`while`/`return` apontam a linha da condição /
-  expressão de retorno.
-
-## Estrutura do projeto
-
+```bash
+javac *.java
 ```
-miniJava.y        gramática + ações semânticas + métodos auxiliares (núcleo do analisador)
-lexico.flex       analisador léxico (JFlex)
-TabSimb.java      tabela de símbolos global
-DescClasse.java   descritor de classe
-DescMetodo.java   descritor de método
-TS_entry.java     representação de tipo
-ClasseID.java     enum das classes de identificador
-ParserVal.java    valor semântico do byacc/j
-Makefile          build
-*.mjava           casos de teste
-docs/             documento de design (spec)
+
+
+## Como Executar
+
+Após a compilação, execute o analisador informando um arquivo MiniJava:
+
+```bash
+java Parser correto2.mjava
 ```
+
+ou
+
+```bash
+java Parser heranca_ok.mjava
+```
+
+ou
+
+```bash
+java Parser polimorfismo_ok.mjava
+```
+
+
+
+## Execução dos Testes
+
+O projeto disponibiliza arquivos de teste contendo exemplos válidos e inválidos.
+
+Para executar os testes:
+
+```bash
+./testar.sh
+```
+
+Os arquivos de erro permitem verificar se o analisador detecta corretamente as inconsistências semânticas implementadas.
+
+
+
+## Exemplos de Erros Detectados
+
+### Variável não declarada
+
+```java
+x = 10;
+```
+
+Resultado esperado:
+
+```text
+Erro semântico: variável 'x' não declarada.
+```
+
+---
+
+### Método inexistente
+
+```java
+obj.metodoInexistente();
+```
+
+Resultado esperado:
+
+```text
+Erro semântico: método não encontrado.
+```
+
+
+
+### Tipo incompatível
+
+```java
+int x;
+x = true;
+```
+
+Resultado esperado:
+
+```text
+Erro semântico: tipos incompatíveis.
+```
+
+
+### Superclasse inexistente
+
+```java
+class B extends A {
+}
+```
+
+Resultado esperado:
+
+```text
+Erro semântico: superclasse 'A' não declarada.
+```
+
+
+
+### Sobrescrita inválida
+
+```java
+class A {
+    int f(int x) { ... }
+}
+
+class B extends A {
+    boolean f(int x) { ... }
+}
+```
+
+Resultado esperado:
+
+```text
+Erro semântico: assinatura incompatível na sobrescrita do método.
+```
+
+
+## Passos Realizados Durante o Desenvolvimento
+
+1. Estudo da especificação da linguagem MiniJava;
+2. Análise da gramática fornecida;
+3. Projeto da tabela de símbolos;
+4. Implementação das estruturas auxiliares;
+5. Implementação do controle de escopo;
+6. Implementação das verificações semânticas básicas;
+7. Implementação do suporte à herança;
+8. Implementação do suporte ao polimorfismo;
+9. Implementação das mensagens de erro;
+10. Construção dos casos de teste;
+11. Validação dos resultados obtidos.

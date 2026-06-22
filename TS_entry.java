@@ -1,16 +1,9 @@
-/**
- * Representa um TIPO da linguagem MiniJava.
- *
- * Tipos base (int, boolean, int[], erro) sao singletons criados no Parser.
- * Um tipo-classe e criado uma vez por classe declarada e guarda uma
- * referencia para o seu DescClasse (usado no despacho de metodos).
- */
+
 public class TS_entry
 {
-   private String    id;          // nome do tipo: "int", "boolean", "int[]", "erro" ou nome da classe
-   private ClasseID  classe;      // TipoBase para tipos base; NomeStruct para tipo-classe
-   private DescClasse classeRef;  // != null somente para tipo-classe
-
+   private String    id;          
+   private ClasseID  classe;      
+   private DescClasse classeRef;  
    // construtor para tipos base (int, boolean, int[], erro)
    public TS_entry(String umId, ClasseID umaClasse) {
       id        = umId;

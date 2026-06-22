@@ -1,14 +1,5 @@
 import java.util.LinkedHashMap;
 
-/**
- * Tabela de simbolos GLOBAL: guarda todas as classes declaradas.
- *
- * A estrutura e' aninhada em tres niveis:
- *    TabSimb (global)  ->  DescClasse (atributos + metodos)  ->  DescMetodo (params + locais)
- *
- * O controle de escopo na analise de um corpo de metodo segue a ordem:
- *    variavel local  ->  parametro  ->  atributo da classe corrente  ->  ERRO
- */
 public class TabSimb
 {
    private LinkedHashMap<String, DescClasse> classes;
