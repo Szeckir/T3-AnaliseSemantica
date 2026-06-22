@@ -1,7 +1,6 @@
 $TRACE_OFF
 
-// ERRO DE ESCOPO: uso de uma classe (tipo) que nunca foi declarada.
-// 'Pessoa' nao existe -> erro tanto no parametro quanto no 'new'.
+// uso de uma classe (tipo) que nunca foi declarada
 
 class C {
     public int m(Pessoa p){

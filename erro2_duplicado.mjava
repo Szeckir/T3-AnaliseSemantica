@@ -1,6 +1,6 @@
 $TRACE_OFF
 
-// ERRO DE ESCOPO: atributo declarado duas vezes na mesma classe.
+// atributo declarado duas vezes na mesma classe.
 
 class C {
     int x;

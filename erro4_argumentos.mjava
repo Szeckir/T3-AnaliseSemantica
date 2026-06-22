@@ -1,6 +1,6 @@
 $TRACE_OFF
 
-// ERRO DE POLIMORFISMO: numero/tipo de argumentos incompativel na chamada.
+// numero/tipo de argumentos incompativel na chamada.
 
 class C {
     public int soma(int a, int b){

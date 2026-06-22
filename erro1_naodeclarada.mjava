@@ -1,6 +1,6 @@
 $TRACE_OFF
 
-// ERRO DE ESCOPO: uso de variavel nao declarada (x nao existe em nenhum escopo).
+// uso de variavel nao declarada (x nao existe em nenhum escopo).
 
 class C {
     public int m(){

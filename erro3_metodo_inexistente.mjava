@@ -1,6 +1,6 @@
 $TRACE_OFF
 
-// ERRO DE POLIMORFISMO: chamada de metodo que nao existe na classe do objeto.
+// chamada de metodo que nao existe na classe do objeto
 
 class C {
     public int dobro(int v){

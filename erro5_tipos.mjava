@@ -1,6 +1,6 @@
 $TRACE_OFF
 
-// ERRO DE TIPOS: condicao de if nao booleana e return incompativel.
+// condicao de if nao booleana e return incompativel
 
 class C {
     int x;

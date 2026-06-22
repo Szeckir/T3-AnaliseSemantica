@@ -1,6 +1,6 @@
 $TRACE_OFF
 
-// ERRO DE POLIMORFISMO: tipo de argumento incompativel (boolean onde se espera int).
+// tipo de argumento incompativel (boolean onde se espera int)
 
 class C {
     public int f(int v){
