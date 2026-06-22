@@ -1,0 +1,40 @@
+$TRACE_OFF
+
+// Polimorfismo em uso:
+// - B herda atributo 'x' e metodo 'soma' de A
+// - C.passa(A) aceita um B como argumento (subtipagem)
+// - dentro de B.m, usa 'x' herdado sem redeclarar
+
+class A {
+    int x;
+    public int soma(int v){
+        x = (x + v);
+        return x;
+    }
+}
+
+class B extends A {
+    public int m(){
+        return (x + 10);
+    }
+}
+
+class C {
+    public int passa(A obj){
+        return obj.soma(5);
+    }
+
+    public int teste(){
+        A a;
+        B b;
+        b = new B();
+        a = new B();
+        return this.passa(b);
+    }
+}
+
+class App {
+    public static void main(String[] a){
+        System.out.println(0);
+    }
+}

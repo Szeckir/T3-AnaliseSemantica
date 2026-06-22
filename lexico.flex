@@ -23,6 +23,7 @@ NL  = \n | \r | \r\n
 "$TRACE_OFF" { yyparser.setDebug(false); }
 
 class         { return Parser.CLASS; }
+extends       { return Parser.EXTENDS; }
 "class App"   { return Parser.APP; }
 public        { return Parser.PUBLIC; }
 static        { return Parser.STATIC; }

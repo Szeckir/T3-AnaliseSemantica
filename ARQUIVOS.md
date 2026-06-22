@@ -134,6 +134,11 @@ Programas **válidos** que devem passar pela análise semântica sem
 nenhum erro. Servem como linha-base: a tabela de símbolos é montada e
 listada ao final.
 
+### `heranca_ok.mjava` e `polimorfismo_ok.mjava`
+Programas **válidos** que exercitam o foco do trabalho: herança com
+`extends`, sobrescrita de método com mesma assinatura, acesso a atributo
+herdado e atribuição/passagem de argumento com subtipagem (`A x = new B();`).
+
 ### Casos de erro (cada um isola **uma** regra semântica)
 
 - **`erro1_naodeclarada.mjava`** — uso de variável que não existe em
@@ -151,6 +156,11 @@ listada ao final.
 - **`erro7_arg_tipo.mjava`** — chamada de método com **quantidade
   correta** de argumentos, mas com **tipo incompatível** em alguma
   posição.
+- **`erro8_super_nao_decl.mjava`** — `extends` referenciando uma classe
+  que nunca foi declarada.
+- **`erro9_override_assinatura.mjava`** — método de subclasse com mesmo
+  nome de um método herdado, mas com assinatura incompatível (override
+  inválido).
 
 Todos esses casos imprimem mensagens com o número da linha do
 identificador problemático, graças ao `ival` carregado pelo lexer.

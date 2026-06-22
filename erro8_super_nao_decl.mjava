@@ -1,0 +1,15 @@
+$TRACE_OFF
+
+// Erro: 'extends' referencia uma classe nao declarada.
+
+class B extends NaoExiste {
+    public int m(){
+        return 0;
+    }
+}
+
+class App {
+    public static void main(String[] a){
+        System.out.println(0);
+    }
+}

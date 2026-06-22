@@ -25,7 +25,8 @@ public class TabSimb
    public void listar() {
       System.out.println("\n=================== TABELA DE SIMBOLOS ===================");
       for (DescClasse c : classes.values()) {
-         System.out.println("\nClasse: " + c.getNome());
+         String h = c.getSuperclasse() == null ? "" : " extends " + c.getSuperclasse().getNome();
+         System.out.println("\nClasse: " + c.getNome() + h);
 
          for (java.util.Map.Entry<String, TS_entry> a : c.getAtributos().entrySet())
             System.out.println("   atributo  " + String.format("%-12s", a.getKey()) + ": " + a.getValue());

@@ -1,0 +1,23 @@
+$TRACE_OFF
+
+// Caso valido: heranca + sobrescrita + atribuicao polimorfica.
+// B herda de A; B sobrescreve m(); uma variavel do tipo A recebe um new B().
+
+class A {
+    int x;
+    public int m(){
+        return 1;
+    }
+}
+
+class B extends A {
+    public int m(){
+        return 2;
+    }
+}
+
+class App {
+    public static void main(String[] a){
+        System.out.println(1);
+    }
+}

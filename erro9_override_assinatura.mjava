@@ -1,0 +1,22 @@
+$TRACE_OFF
+
+// Erro: sobrescrita com assinatura incompativel
+// (A.m retorna int sem parametros; B.m retorna boolean sem parametros).
+
+class A {
+    public int m(){
+        return 1;
+    }
+}
+
+class B extends A {
+    public boolean m(){
+        return true;
+    }
+}
+
+class App {
+    public static void main(String[] a){
+        System.out.println(1);
+    }
+}

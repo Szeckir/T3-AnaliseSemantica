@@ -10,6 +10,7 @@ public class DescMetodo
 {
    private String   nome;
    private TS_entry tipoRetorno;
+   private int      linhaDecl;   // linha onde foi declarado (p/ erros de override)
    private LinkedHashMap<String, TS_entry> parametros; // ordem preservada p/ checar chamadas
    private LinkedHashMap<String, TS_entry> locais;
 
@@ -22,6 +23,8 @@ public class DescMetodo
 
    public String   getNome()        { return nome;        }
    public TS_entry getTipoRetorno() { return tipoRetorno; }
+   public int      getLinhaDecl()   { return linhaDecl;   }
+   public void     setLinhaDecl(int ln) { this.linhaDecl = ln; }
 
    public boolean temParametro(String n) { return parametros.containsKey(n); }
    public boolean temLocal(String n)     { return locais.containsKey(n);     }

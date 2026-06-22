@@ -4,7 +4,7 @@
 %}
 
 
-%token CLASS, PUBLIC, STATIC, VOID, MAIN, APP
+%token CLASS, EXTENDS, PUBLIC, STATIC, VOID, MAIN, APP
 %token STRING, INT, BOOLEAN, IF, ELSE, WHILE, SOUT
 %token NEW, TRUE, FALSE, THIS, LENGTH, RETURN
 %token AND, EQ, NEQ
@@ -31,9 +31,13 @@ MainClass	:	APP '{' { abreApp(); } PUBLIC STATIC VOID MAIN '(' STRING '[' ']' Id
               { fechaEscopoClasse(); }
           ;
 
-ClassDeclaration	:	CLASS Identifier { abreClasse($2.sval, $2.ival); } '{' VarDeclarationList MethodDeclarationList  '}'
+ClassDeclaration	:	CLASS Identifier { abreClasse($2.sval, $2.ival); } HerancaOpt '{' VarDeclarationList MethodDeclarationList  '}'
                       { fechaEscopoClasse(); }
                   ;
+
+HerancaOpt : EXTENDS Identifier { defineHeranca($2.sval, $2.ival); }
+           |
+           ;
 
 MethodDeclarationList : MethodDeclarationList MethodDeclaration
                       |
@@ -187,11 +191,42 @@ RealParamListAux : ',' Exp RealParamListAux { ArrayList<TS_entry> l = (ArrayList
     if (classeCorrente.temMetodo(nome))
       erroSem(ln, "metodo '" + nome + "' ja declarado na classe '" + classeCorrente.getNome() + "'");
     metodoCorrente = new DescMetodo(nome, tipoRet);
+    metodoCorrente.setLinhaDecl(ln);
     classeCorrente.addMetodo(metodoCorrente);   // visivel ja no proprio corpo
   }
 
+  // ao fechar o metodo, se ele sobrescreve um metodo herdado, exige mesma assinatura
   private void fechaEscopoMetodo() {
+    if (metodoCorrente != null && classeCorrente != null
+        && classeCorrente.getSuperclasse() != null) {
+      DescMetodo pai = classeCorrente.getSuperclasse().getMetodoVisivel(metodoCorrente.getNome());
+      if (pai != null && !mesmaAssinatura(pai, metodoCorrente))
+        erroSem(metodoCorrente.getLinhaDecl(),
+                "sobrescrita invalida de '" + metodoCorrente.getNome()
+                + "': assinatura difere de '" + pai.assinatura() + "'");
+    }
     metodoCorrente = null;
+  }
+
+  private boolean mesmaAssinatura(DescMetodo a, DescMetodo b) {
+    if (a.getTipoRetorno() != b.getTipoRetorno()) return false;
+    ArrayList<TS_entry> pa = a.tiposParametros();
+    ArrayList<TS_entry> pb = b.tiposParametros();
+    if (pa.size() != pb.size()) return false;
+    for (int i = 0; i < pa.size(); i++) if (pa.get(i) != pb.get(i)) return false;
+    return true;
+  }
+
+  // -------------------- heranca --------------------
+  private void defineHeranca(String nomePai, int ln) {
+    if (classeCorrente == null) return;
+    DescClasse pai = tabela.getClasse(nomePai);
+    if (pai == null) { erroSem(ln, "superclasse '" + nomePai + "' nao declarada"); return; }
+    if (pai == classeCorrente) { erroSem(ln, "classe '" + nomePai + "' nao pode herdar de si mesma"); return; }
+    // checagem simples de ciclo (defensiva: heranca so referencia classes ja declaradas)
+    for (DescClasse c = pai; c != null; c = c.getSuperclasse())
+       if (c == classeCorrente) { erroSem(ln, "ciclo de heranca envolvendo '" + nomePai + "'"); return; }
+    classeCorrente.setSuperclasse(pai);
   }
 
   // -------------------- declaracoes --------------------
@@ -234,8 +269,8 @@ RealParamListAux : ',' Exp RealParamListAux { ArrayList<TS_entry> l = (ArrayList
       TS_entry t = metodoCorrente.resolve(nome);
       if (t != null) return t;
     }
-    if (classeCorrente != null && classeCorrente.temAtributo(nome))
-      return classeCorrente.getAtributo(nome);
+    if (classeCorrente != null && classeCorrente.temAtributoVisivel(nome))
+      return classeCorrente.getAtributoVisivel(nome);
     erroSem(ln, "variavel '" + nome + "' nao declarada");
     return Tp_ERRO;
   }
@@ -262,7 +297,7 @@ RealParamListAux : ',' Exp RealParamListAux { ArrayList<TS_entry> l = (ArrayList
       return Tp_ERRO;
     }
     DescClasse c = tipoObj.getClasseRef();
-    DescMetodo m = c.getMetodo(metodo);
+    DescMetodo m = c.getMetodoVisivel(metodo);
     if (m == null) {
       erroSem(linha, "metodo '" + metodo + "' nao existe na classe '" + c.getNome() + "'");
       return Tp_ERRO;
@@ -290,12 +325,19 @@ RealParamListAux : ',' Exp RealParamListAux { ArrayList<TS_entry> l = (ArrayList
                   + "' (esperado " + destino + ", recebido " + tipoExp + ")");
   }
 
-  // compatibilidade de atribuicao/argumento: mesmo tipo (sem heranca -> sem subtipo)
+  // compatibilidade de atribuicao/argumento: mesmo tipo OU origem subtipo de destino
   private boolean compativel(TS_entry destino, TS_entry origem) {
     if (destino == Tp_ERRO || origem == Tp_ERRO) return true;   // erro ja reportado
     if (destino == origem) return true;                         // tipos base (singletons)
-    if (destino.isClasse() && origem.isClasse())                // tipo-classe: mesma classe
-      return destino.getClasseRef() == origem.getClasseRef();
+    if (destino.isClasse() && origem.isClasse())
+      return ehSubtipo(origem.getClasseRef(), destino.getClasseRef());
+    return false;
+  }
+
+  // sub e' subclasse (direta ou transitiva) de sup, ou sub == sup
+  private boolean ehSubtipo(DescClasse sub, DescClasse sup) {
+    for (DescClasse c = sub; c != null; c = c.getSuperclasse())
+      if (c == sup) return true;
     return false;
   }
 
